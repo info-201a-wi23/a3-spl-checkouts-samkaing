@@ -1,86 +1,139 @@
 ---
-title: "A3: SPL Library Checkouts"
-output: html_document
+title: 'A3: SPL Library Checkouts'
+output:
+  html_document: default
+  pdf_document: default
 ---
+```{r setup, include=FALSE}
+library(knitr)
+```
 
 ### Introduction
 
-An introduction of the data and a description of the trends/books/items you are choosing to analyze (and why!)
+I will be doing trends of checkout rates of different psychology medias from 2017 to 2023, trends of checkout rates of four popular book to movies/tv shows checkout rates, and my last graph will be the total checkout rate of the most popular author on tiktok, Colleen Hoover. I decided to do psychology because I wanted to see if their was any increase checkouts of self help books during the pandemic because there was an increase of mental instability during that time. I wanted to see if people had turned to books if they couldn't connect through therapy. For my second chart, I did four series and their checkout rates over time. I read *Harry Potter*, *A Song of Ice and Fire* and the second book of *Twilight* but I had only seen the movie version of *Lord of the Rings*. These four are still quite popular today and have amassed a cult following. Therefore I wanted to see if active news within the fandoms have affected the checkouts. In Chart 3, I looked at the most popular books released by the most popular author on tiktok, Colleen Hoover. I actually hate Hoover's books but her books are always on social media so I thought what's the most popular in her collection?
 
 ### Summary Information
 
-Write a summary paragraph of findings that includes the 5 values calculated from your summary information R script
-
-These will likely be calculated using your DPLYR skills, answering questions such as:
-
-- What is the average number of checkouts for each item?
-- What is the month or year with the most/least checkouts for a book that you're interested in?
-- What is the month or year with the most/least checkouts for ebooks?
-- How has the number of print book checkouts changed over time?
-
-Feel free to calculate and report values that you find relevant.
+<br> In Chart 1, I wanted to see how much people relied on books for self help. What I found interesting about Chart 2 was that the *Harry Potter* series had an average of `r format (avg_potter)`, Psychology books had a high of `r format (high_book, scientific = FALSE)` while video disks had a high of `r format (high_video, scientific = FALSE)`. The average *Twilight* checkouts were `r format (avg_twilight, scientific = FALSE)`. And the average for *A Song of Ice and Fire* was `r format (avg_twilight, scientific = FALSE)`.
 
 ### The Dataset
 
-- Who collected/published the data?  
-- What are the parameters of the data (dates, number of checkouts, kinds of books, etc.)?
-- How was the data collected or generated?  
-- Why was the data collected?  
-- What, if any, ethical questions do you need to consider when working with this data?  
-- What are possible limitations or problems with this data?   (at least 200 words)
+This dataset comes from Seattle Open Data program that is run by the City of Seattle. The Seattle Open Data is the one who provided the data to the public, but it is the Seattle Public Library who collected the data. They don't list the book's ISBN numbers on their data, although it is still a category. The City of Seattle provides this data with the ideology of keeping the people transparent about what happens in Seattle. The dataset is updated monthly, usually around the 6th of each month. They started in 2005, and collect data on both physical media and digital. The physical media can be things like books and video discs, while digital could be ebooks and audiobooks. I think the limitations of this data is that the labeling of subjects is a bit inconsistent.
 
 
-### First Trends Over Time Chart
+### Psychology Book Checkout Rates Over Time
 
-Include a chart. Make sure to describe why you included the chart, and what patterns emerged
+<br> In this chart I wanted to see if people were checking these items out in digital format but surprisingly, no psychology book was checked out in ebook format. There was a big spike in checkouts in December of 2017. And looking at the dataset it was actually one specific book that was written by a neurologist before his death. As expected there was a low checkout rate during the early pandemic and then a slight surge around 2021 when places started to open up again. 
 
-The first chart that you will create and include will show the trend over time of your variable/topic/interest. Think carefully about what you want to communicate to your user (you may have to find relevant trends in the dataset first!). Here are some requirements to help guide your design:
 
-- Show more than one, but fewer than ~10 trends
-  - For example, two books, or 5 different mediums
-- You must have clear x and y axis labels
-- The chart needs a clear title 
-- You need a legend for your different line colors and a clear - legend title
-In your .Rmd file, make sure to describe why you included the chart, and what patterns emerged
+```{r, echo = FALSE, warning = FALSE, code = readLines("Chart_1.R")}
+# mental illness by media
+library("dplyr")
+library("stringr")
+library("ggplot2")
+spl_df <- read.csv("~/Desktop/2017-2023-10-Checkouts-SPL-Data.csv", stringsAsFactors = FALSE)
 
-When we say "clear" or "human readable" titles and labels, that means that you should not just display the variable name.
+spl_df <- spl_df %>% mutate(date = paste0(CheckoutYear, "-", CheckoutMonth,  "-01" ))
+spl_df$date <- as.Date(spl_df$date, format = "%Y-%m-%d")
 
-Here's an example of how to run an R script inside an RMarkdown file:
+psych_df <- spl_df %>% filter(str_detect(Subjects, "psychology"))
 
-``````{r, echo = FALSE, warning = FALSE, code = readLines("chart1_example.R")}
+video_disk_df <- psych_df %>% filter(str_detect(MaterialType, "VIDEODISC")) %>% group_by(date) %>%
+  summarize(Checkouts = sum(Checkouts, na.rm = TRUE))
+
+book_df <- psych_df %>% filter(str_detect(MaterialType, "BOOK")) %>% group_by(date) %>%
+  summarize(Checkouts = sum(Checkouts, na.rm = TRUE))
+
+high_book <- book_df %>% summarise(max(Checkouts))
+
+high_video <- video_disk_df %>% summarise(max(Checkouts))
+
+ggplot() + geom_line(data = video_disk_df, aes(x = date, y = Checkouts, color = "Video Disk")) + geom_line(data = book_df, aes(x = date, y = Checkouts, color = "Book")) + ggtitle("Medias of Psychology topics from 2017 to 2023")
+
 ```
 
-### Second Trends Over Time Chart
+### Trends of Four Popular Books to Visual Media Adaptations
 
-Include a chart. Make sure to describe why you included the chart, and what patterns emerged
+For my second chart I analyzed four popular book to visual media series. There was a surge of *Harry Potter* checkouts that occurred with it's checkout for the month being 3681. I am not too sure why that happened it was either something to do with the release of *Fantastic Beast* or maybe *The Cursed Child.* There was also a spike for the *Lord of the Rings*, at December of 2020 where it jumped from 91 to 254. To be honest I thought it might have been the reveal of the new tv show but that wasn't until late 2022.
 
-The second chart that you will create and include will show another trend over time of your variable/topic/interest. Think carefully about what you want to communicate to your user (you may have to find relevant trends in the dataset first!). Here are some requirements to help guide your design:
+```{r, echo = FALSE, code = readLines("Chart_2.R")}
+Chart_2
+#Chart 2: the trend of hunger games, twilight, lord of the rings, a game of thrones throughout the years
+library("dplyr")
+library("stringr")
+library("ggplot2")
+spl_df <- read.csv("~/Desktop/2017-2023-10-Checkouts-SPL-Data.csv", stringsAsFactors = FALSE)
 
-- Show more than one, but fewer than ~10 trends
-  - For example, two books, or 5 different mediums
-- You must have clear x and y axis labels
-- The chart needs a clear title 
-- You need a legend for your different line colors and a clear - legend title
-In your .Rmd file, make sure to describe why you included the chart, and what patterns emerged
+spl_df <- spl_df %>% mutate(date = paste0(CheckoutYear, "-", CheckoutMonth,  "-01" ))
+spl_df$date <- as.Date(spl_df$date, format = "%Y-%m-%d")
 
-When we say "clear" or "human readable" titles and labels, that means that you should not just display the variable name.
+harry_potter_df <- spl_df %>% 
+  filter(str_detect(Title, "Harry Potter")) %>% 
+  filter(str_detect(Creator, "Rowling")) %>%
+  group_by(date) %>% summarize(Checkouts = sum(Checkouts, na.rm = TRUE))
 
-Here's an example of how to run an R script inside an RMarkdown file:
+avg_potter <- harry_potter_df %>% summarise(mean(Checkouts))
 
-``````{r, echo = FALSE, code = readLines("chart2_example.R")}
+twilight_df <- spl_df %>% 
+  filter(str_detect(Title, "Twilight")) %>%
+  filter(str_detect(Creator, "Meyer")) %>%
+  group_by(date) %>% summarize(Checkouts = sum(Checkouts, na.rm = TRUE))
+
+avg_twilight <- twilight_df %>% summarise(mean(Checkouts))
+
+martin_df <- spl_df %>% 
+  filter(str_detect(Creator, "Martin")) %>%
+  filter(str_detect(Creator, "George")) 
+
+asoiaf_df <- martin_df %>% filter(str_detect(Title, "A")) %>%
+  group_by(date) %>% summarize(Checkouts = sum(Checkouts, na.rm = TRUE))
+
+avg_asoiaf <- asoiaf_df %>% summarise(mean(Checkouts))
+
+lotr_df <- spl_df %>% 
+  filter(str_detect(Title, "Lord of the Rings")) %>%
+  filter(str_detect(Creator, "Tolkien")) %>%
+  group_by(date) %>% summarize(Checkouts = sum(Checkouts, na.rm = TRUE))
+
+ggplot() + geom_line(data = asoiaf_df, aes(x = date, y = Checkouts, color = "A Song of Ice and Fire Series")) + geom_line(data = twilight_df, aes(x = date, y = Checkouts, color = "Twilight Series")) + geom_line(data = harry_potter_df, aes(x = date, y = Checkouts, color = "Harry Potter Series")) + geom_line(data = lotr_df, aes(x = date, y = Checkouts, color = "The Lord of the Rings")) + ggtitle("Book Series Checkouts 2017 to 2023")
 ```
 
-### Your Choice
+### The Rise of Colleen Hoover
 
-The last chart is up to you. It could be a line plot, scatter plot, histogram, bar plot, stacked bar plot, and more. Here are some requirements to help guide your design:
+In Chart 3, *It Ends with Us* was the most popular with being 5803 checkouts and its sequel, *It Starts with Us* released last year, had 1171 checkouts. None of Hoover's other books can compete with the success of *It Ends with Us*.
 
-- You must have clear x and y axis labels
-- The chart needs a clear title 
-- You need a legend for your different line colors and a clear legend title
+```{r, echo = FALSE, code = readLines("Chart_3.R")}
+Chart_3
+# a graph on most popular CoHo books 
+library("dplyr")
+library("stringr")
+library("ggplot2")
+spl_df <- read.csv("~/Desktop/2017-2023-10-Checkouts-SPL-Data.csv", stringsAsFactors = FALSE)
 
-Here's an example of how to run an R script inside an RMarkdown file:
+coho_df <- spl_df %>% 
+  filter(str_detect(Creator, "Colleen")) %>% 
+  filter(str_detect(Creator, "Hoover")) %>%
+  group_by(Title) %>% 
+  summarize(Checkouts = sum(Checkouts))
 
-``````{r, echo = FALSE, code = readLines("chart2_example.R")}
+it_ends_with_us_df <- coho_df %>% 
+  filter(str_detect(Title, "It Ends with Us")) %>% 
+  summarize(Title = "It Ends with Us", Checkouts = sum(Checkouts))
+
+it_starts_with_us_df <- coho_df %>% 
+  filter(str_detect(Title, "It Starts with Us")) %>% 
+  summarize(Title = "It Starts with Us", Checkouts = sum(Checkouts))
+
+verity_df <- coho_df %>% 
+  filter(str_detect(Title, "Verity")) %>% 
+  summarize(Title = "Verity", Checkouts = sum(Checkouts))
+
+ugly_love_df <- coho_df %>% 
+  filter(str_detect(Title, "Ugly Love")) %>% 
+  summarize(Title = "Ugly Love", Checkouts = sum(Checkouts))
+
+ggplot() + geom_col(data = it_ends_with_us_df, aes(x = Title, y = Checkouts)) + geom_col(data = verity_df, aes(x = Title, y = Checkouts)) + geom_col(data = ugly_love_df, aes(x = Title, y = Checkouts)) + geom_col(data = it_starts_with_us_df, aes(x = Title, y = Checkouts)) + ggtitle("Colleen Hoover's most popular books from 2017 to 2023")
+
 ```
 
 
