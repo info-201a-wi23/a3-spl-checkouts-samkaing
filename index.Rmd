@@ -1,11 +1,11 @@
 ---
 title: 'A3: SPL Library Checkouts'
 output:
-  html_document: default
-  pdf_document: default
+html_document: default
 ---
 ```{r setup, include=FALSE}
 library(knitr)
+source("summary.R")
 ```
 
 ### Introduction
@@ -14,7 +14,7 @@ I will be doing trends of checkout rates of different psychology medias from 201
 
 ### Summary Information
 
-<br> In Chart 1, I wanted to see how much people relied on books for self help. What I found interesting about Chart 2 was that the *Harry Potter* series had an average of `r format (avg_potter)`, Psychology books had a high of `r format (high_book, scientific = FALSE)` while video disks had a high of `r format (high_video, scientific = FALSE)`. The average *Twilight* checkouts were `r format (avg_twilight, scientific = FALSE)`. And the average for *A Song of Ice and Fire* was `r format (avg_twilight, scientific = FALSE)`.
+In Chart 1, I wanted to see how much people relied on books for self help. With that graph there was a spike in late 2017 where `r format (psych_high_book, scientific = FALSE)` psychology books were checked out in the Seattle library system. Further research indicates that it was a specific book, written by a neurologist before he passed away. What I found interesting about Chart 2 was that the *Harry Potter* series had an also a spike in checkouts in early 2020, where `r format (high_potter, scientific = FALSE)` *Harry Potter* media were checked out. The *Harry Potter* out competes any other series. The average checkouts for the six years for *Harry Potter* was `r format (avg_potter, scientific = FALSE)` while the next highest was *A Song of Ice and Fire* where the average checkouts was `r format (avg_asoiaf, scientific = FALSE)`.
 
 ### The Dataset
 
@@ -23,7 +23,7 @@ This dataset comes from Seattle Open Data program that is run by the City of Sea
 
 ### Psychology Book Checkout Rates Over Time
 
-<br> In this chart I wanted to see if people were checking these items out in digital format but surprisingly, no psychology book was checked out in ebook format. There was a big spike in checkouts in December of 2017. And looking at the dataset it was actually one specific book that was written by a neurologist before his death. As expected there was a low checkout rate during the early pandemic and then a slight surge around 2021 when places started to open up again. 
+In this chart I wanted to see if people were checking these items out in digital format but surprisingly, no psychology book was checked out in ebook format. There was a big spike in checkouts in December of 2017. And looking at the dataset it was actually one specific book that was written by a neurologist before his death. As expected there was a low checkout rate during the early pandemic and then a slight surge around 2021 when places started to open up again. 
 
 
 ```{r, echo = FALSE, warning = FALSE, code = readLines("Chart_1.R")}

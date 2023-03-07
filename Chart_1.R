@@ -15,8 +15,4 @@ video_disk_df <- psych_df %>% filter(str_detect(MaterialType, "VIDEODISC")) %>% 
 book_df <- psych_df %>% filter(str_detect(MaterialType, "BOOK")) %>% group_by(date) %>%
   summarize(Checkouts = sum(Checkouts, na.rm = TRUE))
 
-high_book <- book_df %>% summarise(max(Checkouts))
-
-high_video <- video_disk_df %>% summarise(max(Checkouts))
-
 ggplot() + geom_line(data = video_disk_df, aes(x = date, y = Checkouts, color = "Video Disk")) + geom_line(data = book_df, aes(x = date, y = Checkouts, color = "Book")) + ggtitle("Medias of Psychology topics from 2017 to 2023")
